@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Data Assistant API"
@@ -9,9 +9,14 @@ class Settings(BaseSettings):
     SESSION_DB_PATH: str = "data/sessions.db"
 
     # API Keys
-    ANTHROPIC_API_KEY: str = ""
+    DASHSCOPE_API_KEY: str = ""
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env")
 
-settings = Settings()
+from functools import lru_cache
+
+@lru_cache()
+def get_settings():
+    return Settings()
+
+settings = get_settings()

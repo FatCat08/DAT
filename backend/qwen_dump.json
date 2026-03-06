@@ -1,0 +1,45 @@
+{
+  "content": "",
+  "tool_calls": [
+    {
+      "name": "query_database",
+      "args": {
+        "sql_query": "SELECT department, SUM(sales) as total_sales FROM sales_data WHERE YEAR(sale_date) = 2023 GROUP BY department;"
+      },
+      "id": "call_bbd3bf5f9ca3473d9b4c4d",
+      "type": "tool_call"
+    },
+    {
+      "name": "suggest_chart",
+      "args": {
+        "chart_type": "bar",
+        "x_axis": "department",
+        "y_axis": "total_sales"
+      },
+      "id": "call_6c14024abbbf493bb839bf",
+      "type": "tool_call"
+    }
+  ],
+  "additional_kwargs": {
+    "tool_calls": [
+      {
+        "function": {
+          "arguments": "{\"sql_query\": \"SELECT department, SUM(sales) as total_sales FROM sales_data WHERE YEAR(sale_date) = 2023 GROUP BY department;\"}",
+          "name": "query_database"
+        },
+        "id": "call_bbd3bf5f9ca3473d9b4c4d",
+        "index": 0,
+        "type": "function"
+      },
+      {
+        "function": {
+          "arguments": "{\"chart_type\": \"bar\", \"x_axis\": \"department\", \"y_axis\": \"total_sales\"}",
+          "name": "suggest_chart"
+        },
+        "id": "call_6c14024abbbf493bb839bf",
+        "index": 1,
+        "type": "function"
+      }
+    ]
+  }
+}

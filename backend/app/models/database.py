@@ -1,30 +1,47 @@
-import asyncio
-import os
+import sqlite3
 import aiosqlite
-from app.config import settings
+import os
 
-async def init_session_db():
+from app.config import get_settings
+
+settings = get_settings()
+
+def get_db_path() -> str:
+    # Ensure directory exists
     os.makedirs(os.path.dirname(settings.SESSION_DB_PATH), exist_ok=True)
-    async with aiosqlite.connect(settings.SESSION_DB_PATH) as db:
+    return settings.SESSION_DB_PATH
+
+async def init_db():
+    """Initializes the SQLite database with sessions and messages tables."""
+    db_path = get_db_path()
+    async with aiosqlite.connect(db_path) as db:
         await db.execute("""
             CREATE TABLE IF NOT EXISTS sessions (
                 id TEXT PRIMARY KEY,
-                title TEXT,
+                title TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        
         await db.execute("""
             CREATE TABLE IF NOT EXISTS messages (
                 id TEXT PRIMARY KEY,
-                session_id TEXT REFERENCES sessions(id) ON DELETE CASCADE,
-                role TEXT CHECK(role IN ('user', 'assistant')),
-                content TEXT,
+                session_id TEXT NOT NULL,
+                role TEXT NOT NULL CHECK(role IN ('user', 'assistant')),
+                content TEXT NOT NULL,
                 metadata TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
             )
         """)
         await db.commit()
 
-async def get_db_connection(db_path: str):
-    return await aiosqlite.connect(db_path)
+async def get_db_connection():
+    """Dependency to get an async db connection."""
+    db = await aiosqlite.connect(get_db_path())
+    db.row_factory = aiosqlite.Row
+    try:
+        yield db
+    finally:
+        await db.close()
