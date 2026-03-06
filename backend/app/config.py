@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     SESSION_DB_PATH: str = "data/sessions.db"
 
     # API Keys
-    DASHSCOPE_API_KEY: str = ""
+    ANTHROPIC_API_KEY: str = ""
 
     class Config:
         env_file = ".env"

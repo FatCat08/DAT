@@ -4,6 +4,6 @@ aiosqlite
 python-dotenv
 pydantic-settings
 langchain
-langchain-openai
+langchain-anthropic
 langchain-community
 pytest
